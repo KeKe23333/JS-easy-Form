@@ -30,7 +30,7 @@
             <tr>
                 <td>Date of birth</td>
                 <td>
-                    <input id="year" onblur="check()"/>
+                    <input id="birth" onblur="check()"/>
                 </td> 
             </tr>
             <tr>
@@ -54,12 +54,13 @@
                     <input class="feature" type="checkbox" id="Sandpit" value="Sandpit">
                     <label for="Sandpit">Sandpit</label><br/>
                     <button id="select_all">SelectAll</button>
+                    <button style="display: none;" id="deselect_all">DeselectAll</button>
                 </td> 
             </tr>
         </tbody>
     </table>
     <br/>
-    <button>Reset</button>
+    <button id="reset">Reset</button>
     <br/>
     <br/>
     <textarea id="textbar" rows="10" cols="31">
@@ -72,15 +73,16 @@
         const street= document.getElementById('street')
         const suburb= document.getElementById('suburb') 
         const postcode= document.getElementById('postcode')   
-        const textbar= document.getElementById('textbar')
-        const year= document.getElementById('year')
+    
+        const birth= document.getElementById('birth')
         const building_type = document.getElementById('building_type')
-        const features = document.querySelectorAll('.feature input[type="checkbox"]') //thsi is a item list and each is a boolean.
+        const features = document.querySelectorAll('.feature') //thsi is a item list and each is a boolean
+
+        const textbar= document.getElementById('textbar')
 
         let age   /* the input age */
 
-
-        // deal with the building type.
+        // update the building type.
         let building_type_name = 'an Apartment'  //initial state
         building_type.onchange = function(){
             if (building_type.value=="Apartment") {
@@ -91,26 +93,51 @@
             check()
         }
 
-      
-         // deal with the features.
-         // slice  join 
-         //
-        let features_print = 'no features'
-        let feature_array = []
-        feature.onchange = function (){
-    /*        for( i=0; i < features.length; i++){
-                if (features[i].checked() ==true) {
-                    console.log(features[i].value)
+        
+        // update Features's change
+        features.forEach(feature =>{
+            feature.onchange = function() {
+                check()
+            }
+        })
+
+        // select all features 
+        document.getElementById('select_all').addEventListener('click', function(){
+            document.getElementById('select_all').style.display = 'none'
+            document.getElementById('deselect_all').style.display = 'inline-block'
+            features.forEach(feature => {
+                feature.checked = true
+            })
+            check()
+
+        })
+
+        // deselect all features 
+
+        document.getElementById('deselect_all').addEventListener('click', function(){
+            document.getElementById('deselect_all').style.display = 'none'
+            document.getElementById('select_all').style.display = 'inline-block'
+            features.forEach(feature => {
+                    feature.checked = false
+            })
+            check()
+        })
     
-                    feature_array.push(features[i].value)
-                }
-            } */
-            console.log('no no no ')
-    
-        }
+                // reset all things
+        document.getElementById('reset').addEventListener('click', function(){
+                street.value=''
+                suburb.value=''
+                postcode.value=''
+                birth.value=''
+                building_type.value = 'Apartment'
+                features.forEach(f =>{
+                    f.checked = false
+                })
+                textbar.innerHTML=('')
+                
+        })
 
 
-        ///////
 
         function checkStreet() {
             let streetName=street.value
@@ -140,14 +167,20 @@
         }
 
     
+        function valid_date_check() {
+            const dateStr = birth.value
+            const dateArr = dateStr.split('/')
+            const targetDateStr = `${dateArr[1]}/${dateArr[0]}/${dateArr[2]}`
+            return !isNaN(Date.parse(targetDateStr));
+        }
 
-        function checkYear(){    
+        function checkBirth(){    
             let reg =/[0-9]{2}\/[0-9]{2}\/[0-9]{4}/
             let currentYear = new Date().getFullYear()
-            let yearName=year.value            
+            let yearName=birth.value            
             age = Number(currentYear) - Number(yearName.substring(6))
 
-            if (!reg.test(yearName) || age < 0){
+            if (!reg.test(yearName) || age < -1 || !valid_date_check()){
                 textbar.innerHTML = `Please input a valid date of birth`
                 return false
             }else{
@@ -163,10 +196,28 @@
                 textbar.innerHTML = `Please input a valid suburb`
             }else if (checkPostCode()==false){
                 textbar.innerHTML = `Please input a valid postcode`
-            }else if(checkYear()==false){
+            }else if(checkBirth()==false){
                 textbar.innerHTML = `Please input a valid date of birth`
             }else{
-            textbar.innerHTML = `Your are ${age} years old, and your address is ${street.value} St, ${suburb.value}}, ${postcode.value}, Australia. Your building is ${building_type_name}, and it has ${feature_array}`
+                let feature_array = []
+                let feature_output
+                features.forEach(feature =>{
+                    if (feature.checked) {
+                        feature_array.push(feature.value)
+                    }
+                })
+                // deal with the final features output
+                if( feature_array.length ===0 ){feature_output = 'no features'} 
+                else if ( feature_array.length ===1 ){feature_output =  feature_array[0]}
+                else if( feature_array.length ===2 ){feature_output = feature_array.join(' and ')}
+                else { 
+                    let temp = feature_array.slice(0,feature_array.length-1)
+                    let tail = feature_array[feature_array.length-1]
+                    feature_output= temp.join(", ") + ' and ' + tail
+                }
+                
+
+            textbar.innerHTML = `Your are ${age} years old, and your address is ${street.value} St, ${suburb.value}}, ${postcode.value}, Australia. Your building is ${building_type_name}, and it has ${feature_output}`
             }
         }
         
