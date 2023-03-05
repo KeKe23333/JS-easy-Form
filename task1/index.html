@@ -1,1 +1,175 @@
-<p>Hello world</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <table border="1">
+        <tbody>
+            <tr>
+                <td>Street Name</td>
+                <td>
+                    <input id="street" onblur="check()"/>
+                </td> 
+            </tr>
+            <tr>
+                <td>Suburb</td>
+                <td>
+                    <input id="suburb" onblur="check()"/>
+                </td> 
+            </tr>
+            <tr>
+                <td>Postcode</td>
+                <td>
+                    <input id="postcode" onblur="check()" />
+                </td> 
+            </tr>
+            <tr>
+                <td>Date of birth</td>
+                <td>
+                    <input id="year" onblur="check()"/>
+                </td> 
+            </tr>
+            <tr>
+                <td>Building Type</td>
+                <td>
+                    <select id="building_type" name="building_type"> 
+                        <option value="Apartment">Apartment</option>
+                        <option value="House">House</option>
+                    </select>
+                </td> 
+            </tr>
+            <tr>
+                <td>Fetures</td>
+                <td>
+                    <input class="feature" type="checkbox" id="Heating" value="Heating">
+                    <label for="Heating">Heating</label><br/>
+                    <input class="feature" type="checkbox" id="AirConditioning" value="AirConditioning">
+                    <label for="AirConditioning">AirConditioning</label><br/>
+                    <input class="feature" type="checkbox" id="Pool" value="Pool">
+                    <label for="Pool">Pool</label><br/>
+                    <input class="feature" type="checkbox" id="Sandpit" value="Sandpit">
+                    <label for="Sandpit">Sandpit</label><br/>
+                    <button id="select_all">SelectAll</button>
+                </td> 
+            </tr>
+        </tbody>
+    </table>
+    <br/>
+    <button>Reset</button>
+    <br/>
+    <br/>
+    <textarea id="textbar" rows="10" cols="31">
+        
+    </textarea>
+
+
+    <script>
+
+        const street= document.getElementById('street')
+        const suburb= document.getElementById('suburb') 
+        const postcode= document.getElementById('postcode')   
+        const textbar= document.getElementById('textbar')
+        const year= document.getElementById('year')
+        const building_type = document.getElementById('building_type')
+        const features = document.querySelectorAll('.feature input[type="checkbox"]') //thsi is a item list and each is a boolean.
+
+        let age   /* the input age */
+
+
+        // deal with the building type.
+        let building_type_name = 'an Apartment'  //initial state
+        building_type.onchange = function(){
+            if (building_type.value=="Apartment") {
+                building_type_name = 'an '+ building_type.value
+            }else{
+                building_type_name = 'a ' + building_type.value
+            }
+            check()
+        }
+
+      
+         // deal with the features.
+         // slice  join 
+         //
+        let features_print = 'no features'
+        let feature_array = []
+        feature.onchange = function (){
+    /*        for( i=0; i < features.length; i++){
+                if (features[i].checked() ==true) {
+                    console.log(features[i].value)
+    
+                    feature_array.push(features[i].value)
+                }
+            } */
+            console.log('no no no ')
+    
+        }
+
+
+        ///////
+
+        function checkStreet() {
+            let streetName=street.value
+            if (streetName.length < 3 || streetName.length >50 ){                
+                return false
+            }else {
+               return true
+            }
+        }
+        function checkSuburb(){
+            let suburbName=suburb.value
+            if (suburbName.length < 3 || suburbName.length > 50 ){
+                return false
+            }else{
+                return true
+            }
+        }
+
+        function checkPostCode(){    
+
+            let postCodeName=postcode.value
+            if (postCodeName.length !==4 || !Number.isInteger(Number(postCodeName))){
+                return false
+            }else{
+                return true
+            }
+        }
+
+    
+
+        function checkYear(){    
+            let reg =/[0-9]{2}\/[0-9]{2}\/[0-9]{4}/
+            let currentYear = new Date().getFullYear()
+            let yearName=year.value            
+            age = Number(currentYear) - Number(yearName.substring(6))
+
+            if (!reg.test(yearName) || age < 0){
+                textbar.innerHTML = `Please input a valid date of birth`
+                return false
+            }else{
+                return true
+            }
+        }
+
+
+        function check(){
+            if (checkStreet() == false){
+                textbar.innerHTML = 'Please input a valid street name'
+            }else if (checkSuburb() == false){
+                textbar.innerHTML = `Please input a valid suburb`
+            }else if (checkPostCode()==false){
+                textbar.innerHTML = `Please input a valid postcode`
+            }else if(checkYear()==false){
+                textbar.innerHTML = `Please input a valid date of birth`
+            }else{
+            textbar.innerHTML = `Your are ${age} years old, and your address is ${street.value} St, ${suburb.value}}, ${postcode.value}, Australia. Your building is ${building_type_name}, and it has ${feature_array}`
+            }
+        }
+        
+        
+    </script>
+</body>
