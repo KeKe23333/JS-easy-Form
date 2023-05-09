@@ -4,12 +4,6 @@
 
 ## Change Log
 
-N/A
-
-## Background & Motivation
-
-This assessment aims to allow students to demonstrate knowledge they've developed during week 3 of the course. You will be building web pages with HTML, CSS, but predominately Javascript.
-
 ## Tasks
 
 ### Task 1 - Dynamic form
